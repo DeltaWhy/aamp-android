@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    
+    <RelativeLayout android:id="@+id/control_items"
+        android:layout_width="match_parent"
+        android:layout_height="1000dp">
+        <TextView 
+            	  android:id="@+id/volume_label"
+            	  android:text="Volume: "
+            	  android:layout_width="wrap_content" 
+            	  android:layout_height="40dp"/>
+        <SeekBar android:id="@+id/volume_bar" 
+         		android:layout_width="match_parent"
+        		android:layout_height="40dp"
+        		android:onClick="volumeBar"/>
+        <TextView 
+            android:id="@+id/seek_label"
+            android:text="Progress "             	  
+            android:layout_width="wrap_content"
+			android:layout_height="40dp"
+			android:layout_below="@+id/volume_label"/>
+
+        <SeekBar android:id="@+id/seekBar" 
+         		android:layout_width="match_parent"
+        		android:layout_height="40dp"
+        		android:layout_below="@+id/volume_bar"
+        		android:onClick="seekBar"/>
+        <RelativeLayout android:id="@+id/buttons"
+                    	android:gravity="center"
+            			android:layout_height="30dp"
+            			android:layout_width="match_parent"
+            			android:layout_below="@+id/seekBar"
+            			
+            			>
+        <Button android:id="@+id/play_pause_but" 
+         		android:layout_width="50dp"
+        		android:layout_height="55dp"
+        		android:onClick="togglePlayPause" 
+  				android:layout_toRightOf="@+id/prev_but"
+  				android:background="@android:drawable/ic_media_play"
+/>
+        <Button android:id="@+id/next_but" 
+         		android:layout_width="50dp"
+        		android:layout_height="55dp"
+        		android:layout_toRightOf="@+id/play_pause_but"
+        		android:onClick="next"
+        		android:background="@android:drawable/ic_media_next"
+ />
+        <Button android:id="@+id/prev_but" 
+         		android:layout_width="50dp"
+        		android:layout_height="55dp"
+        		android:onClick="prev" 
+        		android:background="@android:drawable/ic_media_previous"
+        		/>
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>
