@@ -19,6 +19,7 @@ public class ServiceTestActivity extends Activity implements OnClickListener {
         startButton = (Button)findViewById(R.id.startButton);
         stopButton = (Button)findViewById(R.id.stopButton);
         startButton.setOnClickListener(this);
+        stopButton.setOnClickListener(this);
     }
 
     @Override
@@ -33,6 +34,7 @@ public class ServiceTestActivity extends Activity implements OnClickListener {
         if (v == startButton) {
             startService(new Intent(this, HTTPService.class));
         } else if (v == stopButton) {
+            sendBroadcast(new Intent("net.miscjunk.aamp.HTTPService.STOP"));
             stopService(new Intent(this, HTTPService.class));
         }
     }
