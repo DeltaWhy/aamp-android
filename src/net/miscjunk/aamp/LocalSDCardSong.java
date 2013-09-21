@@ -1,53 +1,56 @@
 package net.miscjunk.aamp;
 
+import java.io.File;
 import java.io.IOException;
 
-import android.media.MediaPlayer;
 import net.miscjunk.aamp.common.PlayableSong;
+import android.content.Context;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.util.Log;
 
 public class LocalSDCardSong implements PlayableSong {
 	private MediaPlayer player;
 	private Runnable finished;
 	
-	public LocalSDCardSong(String absPath, String musicFileName) {
-		player = new  MediaPlayer();
+	public LocalSDCardSong(String absPath, String musicFileName, Context context) {
 		try {
-			player.setDataSource(absPath + "/" + musicFileName);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
+			Uri uri = Uri.fromFile(new File(absPath + "/" + musicFileName));
+			player = new MediaPlayer();
+			player.setDataSource(context, uri);
 			player.prepare();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {		
 			@Override
 			public void onCompletion(MediaPlayer mp) {
-				mp.stop();
+				mp.release();
 				finished.run();
+			}
+		});
+		player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+			@Override
+			public boolean onError(MediaPlayer mp, int what, int extra) {
+				switch (what) {
+				case MediaPlayer.MEDIA_ERROR_MALFORMED:
+					Log.e("Malformed", "mal");
+					break;
+				case MediaPlayer.MEDIA_ERROR_IO:
+					Log.e("Shit", "Media error");
+					break;
+
+				default:
+					break;
+				}
+				return false;
 			}
 		});
 	}
 	
 	@Override
 	public boolean fetch() {
-		try {
-			player.prepare();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
+		return true;
 	}
 
 	@Override
@@ -62,6 +65,7 @@ public class LocalSDCardSong implements PlayableSong {
 
 	@Override
 	public boolean pause() {
+		player.pause();
 		return false;
 	}
 
