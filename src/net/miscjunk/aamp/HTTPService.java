@@ -4,12 +4,16 @@ import net.miscjunk.aamp.common.*;
 
 import com.google.gson.GsonBuilder;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 import org.eclipse.jetty.server.Server;
 
@@ -23,6 +27,7 @@ public class HTTPService extends Service {
             String action = intent.getAction();
             if (action.equals("net.miscjunk.aamp.HTTPService.STOP")) {
                 stopServer();
+                stopSelf();
             }
         }
     };
@@ -65,6 +70,16 @@ public class HTTPService extends Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        Notification n = new NotificationCompat.Builder(this)
+            .setContentTitle("AAMP Server")
+            .setContentText("AAMP is running in the background.")
+            .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, ServiceTestActivity.class), 0))
+            .setOngoing(true)
+            .setSmallIcon(R.drawable.ic_launcher)
+            .build();
+        
+        startForeground(13531, n);
         super.onCreate();
     }
     
