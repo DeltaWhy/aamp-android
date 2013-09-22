@@ -14,10 +14,10 @@ public class SdFolderProvider implements MusicProvider {
     String rootDir;
     private Playlist playlist;
     private Map<String, String> names;
-    Context ctx;
+    private Context ctx;
 
-    public SdFolderProvider(Context ctx, String path, boolean create) {
-        this.ctx = ctx;
+    public SdFolderProvider(Context context, String path, boolean create) {
+        this.ctx = context;
         this.rootDir = "/sdcard"+path;
         System.out.println("Root dir: "+rootDir);
         playlist = new Playlist();
