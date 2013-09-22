@@ -1,6 +1,5 @@
 package net.miscjunk.aamp;
 
-import net.miscjunk.aamp.common.Playlist;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -18,10 +17,10 @@ public class NowPlayingFragment extends Fragment{
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
 		  MainActivity act = (MainActivity) getActivity();
-		  if(act.getCurrentQueue() == null) {//rerun in 500 ms
-			  
+		  if(act.getBackgroundHandler() == null) {//rerun in 500 ms
+			  throw new RuntimeException("Handle me gracefully, touch me gently");
 		  }
-		disp = new SongDisplay(getActivity(), act.getCurrentQueue(), act);
+		disp = new SongDisplay(getActivity(), act.getBackgroundHandler());
 	    inflated = (RelativeLayout) inflater.inflate(R.layout.now_playing,
 	            container, false);
 	    RelativeLayout controlsLayout = (RelativeLayout)inflated.findViewById(R.id.control_items);

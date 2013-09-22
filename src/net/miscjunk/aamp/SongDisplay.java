@@ -3,6 +3,10 @@ package net.miscjunk.aamp;
 import net.miscjunk.aamp.common.Playlist;
 import net.miscjunk.aamp.common.Song;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.Message;
+import android.os.Messenger;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +17,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class SongDisplay extends ListView implements OnScrollListener {
-	public interface OnSongClicked {
-		void onSongClick(String id);
-	}
-
 	private SongAdapter adapter;
-    public SongDisplay(Context context, Playlist playlist, OnSongClicked clickListener) {
+    public SongDisplay(Context context, Handler handler) {
 		super(context);
-		adapter = new SongAdapter(playlist, clickListener);
+		adapter = new SongAdapter(handler);
 		setOnScrollListener(this);
 	}
 
@@ -34,13 +34,18 @@ public class SongDisplay extends ListView implements OnScrollListener {
 
     public void onScrollStateChanged(AbsListView v, int s) { }    
 
-    public class SongAdapter extends BaseAdapter {
+    public class SongAdapter extends BaseAdapter implements Callback  {
         int count = 40; /* starting amount */
         Playlist list;
-        SongDisplay.OnSongClicked callback;
-        public SongAdapter(Playlist list, SongDisplay.OnSongClicked callback) {
-        	this.list = list;
-        	this.callback = callback;
+        public Handler mHandler;
+        private Handler bg;
+        public SongAdapter(Handler bg) {
+        	this.list = new Playlist();//init to something non null, dynamic load later
+        	mHandler = new Handler(this);
+        	Message giveMeData = Message.obtain(bg, ProxyUIBridge.GET_ALL_SONGS);
+        	giveMeData.replyTo = new Messenger(this.mHandler);
+        	bg.sendMessage(giveMeData);
+        	this.bg = bg;
 		}
                
         public void cycle(int i) {
@@ -60,7 +65,7 @@ public class SongDisplay extends ListView implements OnScrollListener {
 					@Override
 					public void onClick(View v) {
 						SongView song = (SongView) v;
-						callback.onSongClick(song.getSongId());
+						Message.obtain(bg, ProxyUIBridge.SKIP_TO, song.getId());
 					}
 				});
                 view.setGravity(Gravity.CENTER);
@@ -71,6 +76,14 @@ public class SongDisplay extends ListView implements OnScrollListener {
 		@Override
 		public int getCount() {
 			return Math.min(count, list.size());
+		}
+		
+		@Override
+		public boolean handleMessage(Message msg) {
+			if(msg.what == ProxyUIBridge.GET_ALL_SONGS) {//We got them back yay
+				this.list.append((Playlist)msg.obj); // #WOOT
+			}
+			return false;
 		}
     }
     

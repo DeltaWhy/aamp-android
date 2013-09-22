@@ -1,16 +1,15 @@
 package net.miscjunk.aamp;
 
-import net.miscjunk.aamp.SongDisplay.OnSongClicked;
 import net.miscjunk.aamp.common.MusicProvider;
 import net.miscjunk.aamp.common.MusicProviderDeserializer;
 import net.miscjunk.aamp.common.Playlist;
 import net.miscjunk.aamp.common.PlaylistDeserializer;
 import net.miscjunk.aamp.common.Song;
 import net.miscjunk.aamp.common.SongSerializer;
-
-import com.google.gson.GsonBuilder;
-
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,26 +19,31 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 
-public class MainActivity extends Activity implements Callback, OnSongClicked {   
-	public static final int HERE_IS_YOUR_DATA = 1;
-	
+import com.google.gson.GsonBuilder;
+
+public class MainActivity extends Activity implements Callback, OnClickListener {   
 	private ProxyUIBridge bridge;
 	private Handler bgHandle;
 	private Handler mHandler;
-	private Runnable tellMeGodHesNotNull = new Runnable() {
+	private ImageButton prev_button;
+	private ImageButton play_button;
+	private ImageButton pause_button;
+	private ImageButton next_button;
+	
+	private Runnable pollBridgeHandler = new Runnable() {
 		@Override
 		public void run() {
-			if(bridge.mHandler == null) { mHandler.postDelayed(this, 200); Log.e("He's null", "jim"); }
+			if(bridge.mHandler == null) { mHandler.postDelayed(this, 200);}
 			else {
 				bgHandle = bridge.mHandler;
-				bgHandle.obtainMessage(ProxyUIBridge.INIT_UI_WITH_THE_DATA);
-				Log.e("Free at last", "Free at last");
 			}
 		}
 	};
+	private Fragment nowPlayingFragment;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,28 +60,31 @@ public class MainActivity extends Activity implements Callback, OnSongClicked {
         
         bridge = new ProxyUIBridge(player, mHandler);
         bridge.start();
-        tellMeGodHesNotNull.run();
+        try {
+			bridge.join(400);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+        pollBridgeHandler.run();
         
         
         //Set up UI stuff
         setContentView(R.layout.activity_main);
         getWindowManager().getDefaultDisplay().getSize(Screen.dims);      
-        RelativeLayout fragmentLayouts = (RelativeLayout) findViewById(R.id.fragments_view);
-        fragmentLayouts.getLayoutParams().height = 8 * Screen.dims.y / 10;
-        RelativeLayout buttonsLayout = (RelativeLayout) findViewById(R.id.bottom_menu);
-        buttonsLayout.getLayoutParams().height = Screen.dims.y - fragmentLayouts.getLayoutParams().height;
-        ((RelativeLayout.LayoutParams) buttonsLayout.getLayoutParams()).topMargin = fragmentLayouts.getLayoutParams().height;
+        prev_button = (ImageButton)findViewById(R.id.prev_button);
+        play_button = (ImageButton)findViewById(R.id.play_button);
+        pause_button = (ImageButton)findViewById(R.id.pause_button);
+        next_button = (ImageButton)findViewById(R.id.next_button);
+        prev_button.setOnClickListener(this);
+        play_button.setOnClickListener(this);
+        pause_button.setOnClickListener(this);
+        next_button.setOnClickListener(this);
         
-        View npBut = buttonsLayout.findViewById(R.id.now_playing_but);
-		RelativeLayout.LayoutParams npButParams = (RelativeLayout.LayoutParams) npBut.getLayoutParams();
-        npButParams.width = Screen.dims.x / 2;
-        npButParams.setMargins(Screen.dims.x / 2, 0, 0, 0);
-        npBut.invalidate();
-        
-        RelativeLayout.LayoutParams playlistParams = (RelativeLayout.LayoutParams) buttonsLayout.findViewById(R.id.playlists_but).getLayoutParams();
-        playlistParams.width = Screen.dims.x / 2;
-        playlistParams.leftMargin = 0;
+        FragmentManager fm = getFragmentManager();
+        nowPlayingFragment = new NowPlayingFragment();
+        fm.beginTransaction().add(R.id.fragments_view, nowPlayingFragment).commit();
         checkSeekBars();
+        startService(new Intent(this, PlayerService.class));
     }
 
     private void checkSeekBars() {
@@ -144,20 +151,20 @@ public class MainActivity extends Activity implements Callback, OnSongClicked {
     }
     
     
-    private  boolean paused = true;
-
-	private Playlist currentPlaylist;
-    public void togglePlayPause(View v) {
-		Message msg = Message.obtain(bgHandle);
-    	if(paused) {
-    		v.setBackgroundResource(android.R.drawable.ic_media_play);
-    		msg.what = ProxyUIBridge.PAUSE;
-    	}else {
-    		v.setBackgroundResource(android.R.drawable.ic_media_pause);
-    		msg.what = ProxyUIBridge.PLAY;
-    	}    	
-		msg.sendToTarget();
-    	paused = !paused;
+    public void play(View v) {
+        Message msg = Message.obtain(bgHandle);
+        v.setVisibility(View.GONE);
+        pause_button.setVisibility(View.VISIBLE);
+        msg.what = ProxyUIBridge.PLAY;
+        msg.sendToTarget();
+    }
+    
+    public void pause(View v) {
+        Message msg = Message.obtain(bgHandle);
+        v.setVisibility(View.GONE);
+        play_button.setVisibility(View.VISIBLE);
+        msg.what = ProxyUIBridge.PAUSE;
+        msg.sendToTarget();
     }
     
     public void next(View v) {
@@ -181,7 +188,15 @@ public class MainActivity extends Activity implements Callback, OnSongClicked {
     
     public boolean onOptionsItemSelected(MenuItem item) {
     	if(item.getItemId() == R.id.servers_choose)  {
-        	Log.e("CLick", "choose servers");
+    	    FragmentManager fm = getFragmentManager();
+    	    FragmentTransaction trans = fm.beginTransaction();
+    	    trans.remove(nowPlayingFragment);
+    	    trans.add(R.id.fragments_view, new ServerSelectorFragment());
+    	    trans.addToBackStack(null);
+    	    trans.commit();
+    	} else if (item.getItemId() == R.id.exit){
+    	    sendBroadcast(new Intent("net.miscjunk.aamp.PlayerService.STOP"));
+    	    finish();
     	}
     	return false;
     }
@@ -189,21 +204,26 @@ public class MainActivity extends Activity implements Callback, OnSongClicked {
 	@Override
 	public boolean handleMessage(Message msg) {
 		switch (msg.what) {
-		case HERE_IS_YOUR_DATA:
-			this.currentPlaylist = (Playlist) msg.obj;
-			break;
 		default:
 			break;
 		}
 		return false;
 	}
 
-	public Playlist getCurrentQueue() {
-		return currentPlaylist;
-	}
-
 	@Override
-	public void onSongClick(String id) {
-		bgHandle.obtainMessage(ProxyUIBridge.SKIP_TO, id);
+    public void onClick(View v) {
+        if (v == prev_button) {
+            prev(v);
+        } else if (v == play_button) {
+            play(v);
+        } else if (v == pause_button) {
+            pause(v);
+        } else if (v == next_button) {
+            next(v);
+        }
+    }
+
+	public Handler getBackgroundHandler() {
+		return bgHandle;
 	}
 }
