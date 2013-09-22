@@ -1,17 +1,24 @@
 package net.miscjunk.aamp;
 
+import java.io.File;
+
+import javax.security.auth.SubjectDomainCombiner;
+
 import net.miscjunk.aamp.common.MusicProvider;
 import net.miscjunk.aamp.common.MusicProviderDeserializer;
 import net.miscjunk.aamp.common.Playlist;
 import net.miscjunk.aamp.common.PlaylistDeserializer;
 import net.miscjunk.aamp.common.Song;
-import net.miscjunk.aamp.common.SongSerializer;
+import net.miscjunk.aamp.common.SongAdapter;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
@@ -20,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
@@ -38,7 +46,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 	private Runnable pollBridgeHandler = new Runnable() {
 		@Override
 		public void run() {
-			if(bridge.mHandler == null) { mHandler.postDelayed(this, 200);}
+			if(bridge.mHandler == null) { mHandler.postDelayed(this, 50);}
 			else {
 				bgHandle = bridge.mHandler;
 			}
@@ -46,16 +54,17 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 	};
 	private Fragment nowPlayingFragment;
 	private ServerSelectorFragment serverSelectorFragment;
+	private AAMPSettings settings;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Set up threading stuff
         mHandler = new Handler(this);
-        startService(new Intent(this, HTTPService.class));
+        startService(new Intent(this, PlayerService.class));
         player = new AAMPPlayerProxy("localhost", "13531");
         GsonBuilder gb = new GsonBuilder();
-        gb.registerTypeAdapter(Song.class, new SongSerializer());
+        gb.registerTypeAdapter(Song.class, new SongAdapter());
         gb.registerTypeAdapter(Playlist.class, new PlaylistDeserializer(player));
         gb.registerTypeAdapter(MusicProvider.class, new MusicProviderDeserializer());
         player.setGson(gb.create());
@@ -63,7 +72,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         bridge = new ProxyUIBridge(player, mHandler);
         bridge.start();
         try {
-			bridge.join(400);
+			bridge.join(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -82,11 +91,25 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         pause_button.setOnClickListener(this);
         next_button.setOnClickListener(this);
         
+        folderSelected = new EditText(this);
+        
         FragmentManager fm = getFragmentManager();
         nowPlayingFragment = new NowPlayingFragment();
         fm.beginTransaction().add(R.id.fragments_view, nowPlayingFragment).commit();
         checkSeekBars();
-        startService(new Intent(this, PlayerService.class));
+        
+        settings = new SettingsLoader(this.getApplicationContext()).load();
+        if(settings.getMusicDirectories().isEmpty()) {
+        	AlertDialog dialog = new AlertDialog.Builder(this)
+        			.setNeutralButton("OK", new DialogInterface.OnClickListener() {	
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).setTitle("No music added yet")
+					.setMessage("Please select a folder for music.").create();
+        	dialog.show();
+        }
     }
 
     private void checkSeekBars() {
@@ -187,7 +210,8 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     public void seekBar(View v) {
     	Log.e("Seek", "Clicked");
     }
-    
+	EditText folderSelected;
+
     public boolean onOptionsItemSelected(MenuItem item) {
     	if(item.getItemId() == R.id.servers_choose)  {
     	    FragmentManager fm = getFragmentManager();
@@ -207,6 +231,21 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     	    System.out.println(host);
     	    player.setBaseUri("http://"+host+":13531/");
     	    getFragmentManager().popBackStack();
+    	}else if(item.getItemId() == R.id.folders_choose) {
+			AlertDialog chooseFolderDial = new AlertDialog.Builder(this).
+					setCancelable(true).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							File selected = new File(folderSelected.getText().toString().trim());
+							SettingsLoader saver = new SettingsLoader(MainActivity.this);
+							AAMPSettings settings = saver.load();
+							settings.addMusicPath(selected.getAbsolutePath());
+							saver.save(settings);
+							System.out.println("Music in " + settings.getMusicDirectories());
+							dialog.dismiss();
+						}
+					}).setTitle("Enter music folder name").setView(folderSelected).create();
+			chooseFolderDial.show();
     	}
     	return false;
     }

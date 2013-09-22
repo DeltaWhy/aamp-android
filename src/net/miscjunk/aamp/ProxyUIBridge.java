@@ -40,6 +40,7 @@ public class ProxyUIBridge extends Thread implements Handler.Callback{
 			player.prev();
 			break;
 		case ProxyUIBridge.SKIP_TO:
+			System.out.println("SKIP TO, the following id " + (String) msg.obj);
 			player.skipTo((String) msg.obj);
 			break;
 		case ProxyUIBridge.GET_ALL_SONGS:

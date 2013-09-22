@@ -18,7 +18,7 @@ public class SdFolderProvider implements MusicProvider {
 
     public SdFolderProvider(Context context, String path, boolean create) {
         this.ctx = context;
-        this.rootDir = "/sdcard"+path;
+        this.rootDir = path;
         System.out.println("Root dir: "+rootDir);
         playlist = new Playlist();
         File thisDir = new File(rootDir);
@@ -29,7 +29,7 @@ public class SdFolderProvider implements MusicProvider {
         if (thisDir.listFiles(filter) != null) {
             for(File songFile : thisDir.listFiles(filter)) {
                 System.out.println("Detected song: " + songFile.getName());
-                Song added = new Song("" + i, this);
+                Song added = new Song(songFile.getName() + i + this.getId(), this);
                 added.setTitle(songFile.getName()); //TODO - read ID3 tags
                 playlist.addSong(added);
                 names.put(added.getId(), songFile.getName());

@@ -108,6 +108,7 @@ public class AAMPPlayerProxy implements PlayerClient {
 
 	@Override
 	public boolean skipTo(String id) {
+		System.out.println("TRYING TO POST, just for you patrick: " + "skipTo=" + id);
 		issuePost("control/", "skipTo=" + id);
 		return false;
 	}
@@ -142,6 +143,7 @@ public class AAMPPlayerProxy implements PlayerClient {
 	private String issueSimpleGet(String target) {
 		HttpGet get = new HttpGet(baseUri + target);
 		try {
+			System.out.println("Trying to GET " + get.getURI().toString());
 			HttpResponse res = client.execute(get);
 			return read(res);
 		} catch (ClientProtocolException e) {
@@ -259,7 +261,9 @@ public class AAMPPlayerProxy implements PlayerClient {
 		List<Song> parsed = gs.fromJson(json, listOfSongs);
 		System.out.println("Parsed " + parsed);
 		Playlist ourList = new Playlist();
-		for(Song song : parsed) { ourList.addSong(song); }
+		if(parsed != null) {
+			for(Song song : parsed) { ourList.addSong(song); }
+		}
 		return ourList;
 	}
 

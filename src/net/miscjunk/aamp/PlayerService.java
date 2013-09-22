@@ -4,11 +4,14 @@ import net.miscjunk.aamp.common.*;
 
 import com.google.gson.GsonBuilder;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
@@ -54,11 +57,14 @@ public class PlayerService extends Service {
         IntentFilter filter = new IntentFilter();
         filter.addAction("net.miscjunk.aamp.PlayerService.STOP");
         registerReceiver(receiver, filter);
+        AAMPSettings settings = new SettingsLoader(this.getApplicationContext()).load();
         
         this.player = new Player();
-        player.addProvider(new SdFolderProvider(this, "/aamp-music", true));
+        for(String path : settings.getMusicDirectories()) {
+        	player.addProvider(new SdFolderProvider(this, "/sdcard" + path, true));
+        }
         GsonBuilder gb = new GsonBuilder();
-        gb.registerTypeAdapter(Song.class, new SongSerializer());
+        gb.registerTypeAdapter(Song.class, new SongAdapter());
         gb.registerTypeAdapter(Playlist.class, new PlaylistDeserializer(this.player));
         gb.registerTypeAdapter(MusicProvider.class, new MusicProviderDeserializer());
         server = new Server(13531);
