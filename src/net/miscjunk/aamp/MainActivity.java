@@ -102,7 +102,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         FragmentManager fm = getFragmentManager();
         nowPlayingFragment = new NowPlayingFragment();
         fm.beginTransaction().add(R.id.fragments_view, nowPlayingFragment).commit();
-        checkSeekBars();
         
         settings = new SettingsLoader(this.getApplicationContext()).load();
         if(settings.getMusicDirectories().isEmpty()) {
@@ -118,51 +117,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         }
     }
 
-    private void checkSeekBars() {
-	    SeekBar vol = (SeekBar) findViewById(R.id.volume_bar);
-	    if(vol != null) {
-		    vol.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-				
-				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					Log.e("got volume bar", "" + seekBar.getProgress());
-				}
-				
-				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					
-				}
-				
-				@Override
-				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-					
-				}
-			});
-	    }
-	    SeekBar progress = (SeekBar) findViewById(R.id.seekBar);
-	    if(progress != null) {
-		    progress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-				
-				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					Log.e("got seek bar", "" + seekBar.getProgress());
-				}
-				
-				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					
-				}
-				
-				@Override
-				public void onProgressChanged(SeekBar seekBar, int progress,
-						boolean fromUser) {
-					seekBar.showContextMenu();
-					
-				}
-			});		
-	    }
-	}
-
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -175,15 +129,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         }
         super.onDestroy();
     }
-    
-    public void playlistsClicked(View v) {
-    	
-    }
-    
-    public void nowPlayingClicked(View v) {
-    	Log.e("Play", "Clicked");
-    }
-    
     
     public void play(View v) {
         Message msg = Message.obtain(bgHandle);
@@ -211,14 +156,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
     	Message.obtain(bgHandle, ProxyUIBridge.PREV).sendToTarget();
     }
     
-    public void volumeBar(View v) {
-    	SeekBar bar = (SeekBar) v;
-    	Log.e("Volume", "Clicked " + bar.getProgress());
-    }
-    
-    public void seekBar(View v) {
-    	Log.e("Seek", "Clicked");
-    }
 	EditText folderSelected;
 
     public boolean onOptionsItemSelected(MenuItem item) {
