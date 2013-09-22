@@ -214,11 +214,10 @@ public class AAMPPlayerProxy implements PlayerClient {
 			res = client.execute(del);
 			return read(res);
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return "";
 	}
 
 	@Override
@@ -255,7 +254,13 @@ public class AAMPPlayerProxy implements PlayerClient {
 	@Override
 	public Playlist getAllSongs() {
 		String json = issueSimpleGet("songs");
-		return gs.fromJson(json, Playlist.class);
+		System.out.println("Got JSON: " + json);
+		Type listOfSongs = new TypeToken<List<Song>>(){}.getType();
+		List<Song> parsed = gs.fromJson(json, listOfSongs);
+		System.out.println("Parsed " + parsed);
+		Playlist ourList = new Playlist();
+		for(Song song : parsed) { ourList.addSong(song); }
+		return ourList;
 	}
 
 	@Override

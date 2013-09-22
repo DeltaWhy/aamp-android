@@ -6,9 +6,6 @@ import net.miscjunk.aamp.common.Playlist;
 import net.miscjunk.aamp.common.PlaylistDeserializer;
 import net.miscjunk.aamp.common.Song;
 import net.miscjunk.aamp.common.SongSerializer;
-
-import com.google.gson.GsonBuilder;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -23,10 +20,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+
+import com.google.gson.GsonBuilder;
 
 public class MainActivity extends Activity implements Callback, OnClickListener {   
         private AAMPPlayerProxy player;
@@ -37,13 +34,13 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 	private ImageButton play_button;
 	private ImageButton pause_button;
 	private ImageButton next_button;
-	private Runnable tellMeGodHesNotNull = new Runnable() {
+	
+	private Runnable pollBridgeHandler = new Runnable() {
 		@Override
 		public void run() {
-			if(bridge.mHandler == null) { mHandler.postDelayed(this, 200); Log.e("He's null", "jim"); }
+			if(bridge.mHandler == null) { mHandler.postDelayed(this, 200);}
 			else {
 				bgHandle = bridge.mHandler;
-				Log.e("Free at last", "Free at last");
 			}
 		}
 	};
@@ -65,7 +62,12 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         
         bridge = new ProxyUIBridge(player, mHandler);
         bridge.start();
-        tellMeGodHesNotNull.run();
+        try {
+			bridge.join(400);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+        pollBridgeHandler.run();
         
         
         //Set up UI stuff
@@ -169,10 +171,12 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     
     public void next(View v) {
     	Log.e("Next", "Clicked");
+    	Message.obtain(bgHandle, ProxyUIBridge.NEXT).sendToTarget();
     }
     
     public void prev(View v) {
     	Log.e("Prev", "Clicked");
+    	Message.obtain(bgHandle, ProxyUIBridge.PREV).sendToTarget();
     }
     
     public void volumeBar(View v) {
@@ -209,10 +213,14 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 
 	@Override
 	public boolean handleMessage(Message msg) {
+		switch (msg.what) {
+		default:
+			break;
+		}
 		return false;
 	}
 
-    @Override
+	@Override
     public void onClick(View v) {
         if (v == prev_button) {
             prev(v);
@@ -224,4 +232,8 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
             next(v);
         }
     }
+
+	public Handler getBackgroundHandler() {
+		return bgHandle;
+	}
 }

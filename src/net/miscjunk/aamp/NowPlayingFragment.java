@@ -16,7 +16,11 @@ public class NowPlayingFragment extends Fragment{
 	  @Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
-		disp = new SongDisplay(getActivity());
+		  MainActivity act = (MainActivity) getActivity();
+		  if(act.getBackgroundHandler() == null) {//rerun in 500 ms
+			  throw new RuntimeException("Handle me gracefully, touch me gently");
+		  }
+		disp = new SongDisplay(getActivity(), act.getBackgroundHandler());
 	    inflated = (RelativeLayout) inflater.inflate(R.layout.now_playing,
 	            container, false);
 	    RelativeLayout controlsLayout = (RelativeLayout)inflated.findViewById(R.id.control_items);
