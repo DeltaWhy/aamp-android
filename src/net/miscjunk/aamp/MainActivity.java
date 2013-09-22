@@ -10,6 +10,9 @@ import net.miscjunk.aamp.common.SongSerializer;
 import com.google.gson.GsonBuilder;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +46,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 			}
 		}
 	};
+	private Fragment nowPlayingFragment;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +77,10 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         play_button.setOnClickListener(this);
         pause_button.setOnClickListener(this);
         next_button.setOnClickListener(this);
+        
+        FragmentManager fm = getFragmentManager();
+        nowPlayingFragment = new NowPlayingFragment();
+        fm.beginTransaction().add(R.id.fragments_view, nowPlayingFragment).commit();
         checkSeekBars();
         startService(new Intent(this, PlayerService.class));
     }
@@ -176,7 +184,12 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     
     public boolean onOptionsItemSelected(MenuItem item) {
     	if(item.getItemId() == R.id.servers_choose)  {
-        	Log.e("CLick", "choose servers");
+    	    FragmentManager fm = getFragmentManager();
+    	    FragmentTransaction trans = fm.beginTransaction();
+    	    trans.remove(nowPlayingFragment);
+    	    trans.add(R.id.fragments_view, new ServerSelectorFragment());
+    	    trans.addToBackStack(null);
+    	    trans.commit();
     	} else if (item.getItemId() == R.id.exit){
     	    sendBroadcast(new Intent("net.miscjunk.aamp.PlayerService.STOP"));
     	    finish();

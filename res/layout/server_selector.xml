@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ipAddress"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RadioButton
+        android:id="@+id/localServer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="This device" />
+
+    <CheckBox
+        android:id="@+id/serverVisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:checked="true"
+        android:enabled="false"
+        android:text="Allow remote control" />
+
+    <RadioButton
+        android:id="@+id/otherServer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Other device" />
+
+    <EditText
+        android:id="@+id/ipAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:ems="10"
+        android:hint="IP address" >
+
+        <requestFocus />
+    </EditText>
+
+</LinearLayout>
