@@ -26,6 +26,7 @@ import android.widget.SeekBar;
 import com.google.gson.GsonBuilder;
 
 public class MainActivity extends Activity implements Callback, OnClickListener {   
+        private AAMPPlayerProxy player;
 	private ProxyUIBridge bridge;
 	private Handler bgHandle;
 	private Handler mHandler;
@@ -44,6 +45,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 		}
 	};
 	private Fragment nowPlayingFragment;
+	private ServerSelectorFragment serverSelectorFragment;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         //Set up threading stuff
         mHandler = new Handler(this);
         startService(new Intent(this, HTTPService.class));
-        AAMPPlayerProxy player = new AAMPPlayerProxy("localhost", "13531");
+        player = new AAMPPlayerProxy("localhost", "13531");
         GsonBuilder gb = new GsonBuilder();
         gb.registerTypeAdapter(Song.class, new SongSerializer());
         gb.registerTypeAdapter(Playlist.class, new PlaylistDeserializer(player));
@@ -191,12 +193,20 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     	    FragmentManager fm = getFragmentManager();
     	    FragmentTransaction trans = fm.beginTransaction();
     	    trans.remove(nowPlayingFragment);
-    	    trans.add(R.id.fragments_view, new ServerSelectorFragment());
+    	    if (serverSelectorFragment == null) {
+    	        serverSelectorFragment = new ServerSelectorFragment();
+    	    }
+    	    trans.add(R.id.fragments_view, serverSelectorFragment);
     	    trans.addToBackStack(null);
     	    trans.commit();
     	} else if (item.getItemId() == R.id.exit){
     	    sendBroadcast(new Intent("net.miscjunk.aamp.PlayerService.STOP"));
     	    finish();
+    	} else if (item.getItemId() == R.id.changeServer) {
+    	    String host = serverSelectorFragment.ipAddress.getText().toString();
+    	    System.out.println(host);
+    	    player.setBaseUri("http://"+host+":13531/");
+    	    getFragmentManager().popBackStack();
     	}
     	return false;
     }
