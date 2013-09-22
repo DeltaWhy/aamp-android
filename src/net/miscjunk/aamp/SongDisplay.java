@@ -17,7 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class SongDisplay extends ListView implements OnScrollListener {
-	private SongAdapter adapter;
+	SongAdapter adapter;
     public SongDisplay(Context context, Handler handler) {
 		super(context);
 		adapter = new SongAdapter(handler);

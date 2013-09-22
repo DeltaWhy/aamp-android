@@ -39,6 +39,7 @@ public class PlaylistCreationFragment extends Fragment implements  TextWatcher, 
 	private Handler playListHandler;
 	
 	public PlaylistCreationFragment() {
+	    map = new HashMap<String,String>();
 	}
 	
 	public void setBGHandler(Handler h) {
@@ -58,7 +59,7 @@ public class PlaylistCreationFragment extends Fragment implements  TextWatcher, 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		LinearLayout inflated = (LinearLayout) inflater.inflate(R.layout.query_layout, container);
+		ViewGroup inflated = (ViewGroup) inflater.inflate(R.layout.query_layout, container, false);
 		includes = (EditText) inflated.findViewById(R.id.includes);
 		includes.addTextChangedListener(this);
 		realTimeQuery = (TextView) inflated.findViewById(R.id.query_preview);

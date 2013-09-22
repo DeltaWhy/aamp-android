@@ -55,8 +55,9 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
 		}
 	};
 	private ServerEventListener serverListener;
-	private Fragment nowPlayingFragment;
+	private NowPlayingFragment nowPlayingFragment;
 	private ServerSelectorFragment serverSelectorFragment;
+	private PlaylistCreationFragment playlistCreationFragment;
 	private AAMPSettings settings;
 	
 	@Override
@@ -167,6 +168,18 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
     	        serverSelectorFragment = new ServerSelectorFragment();
     	    }
     	    trans.add(R.id.fragments_view, serverSelectorFragment);
+    	    trans.addToBackStack(null);
+    	    trans.commit();
+    	} else if (item.getItemId() == R.id.search) {
+    	    FragmentManager fm = getFragmentManager();
+    	    FragmentTransaction trans = fm.beginTransaction();
+    	    trans.remove(nowPlayingFragment);
+    	    if (playlistCreationFragment == null) {
+    	        playlistCreationFragment = new PlaylistCreationFragment();
+    	        playlistCreationFragment.setBGHandler(bgHandle);
+    	        playlistCreationFragment.setPlaylisthandler(nowPlayingFragment.disp.adapter.mHandler);
+    	    }
+    	    trans.add(R.id.fragments_view, playlistCreationFragment);
     	    trans.addToBackStack(null);
     	    trans.commit();
     	} else if (item.getItemId() == R.id.exit){

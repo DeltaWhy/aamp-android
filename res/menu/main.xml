@@ -1,8 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
         
-    <item
-        android:id="@+id/servers_choose"
+    <item android:id="@+id/search"
+        android:showAsAction="always"
+        android:title="Search"
+        android:icon="@android:drawable/ic_menu_search" />
+      <item android:id="@+id/servers_choose"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="Choose a server" />
@@ -19,4 +22,5 @@
         android:showAsAction="never"
         android:title="Select music folders" 
         />
+     
 </menu>
