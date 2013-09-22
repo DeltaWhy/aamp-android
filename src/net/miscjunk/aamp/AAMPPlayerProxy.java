@@ -33,7 +33,7 @@ public class AAMPPlayerProxy implements PlayerClient {
 	private Gson gs;
 	
 	public AAMPPlayerProxy(String hostname, String port) {
-		baseUri = hostname + ":" + port + "/";
+		baseUri = "http://" + hostname + ":" + port + "/";
 	}
 	
 	@Override
@@ -69,8 +69,9 @@ public class AAMPPlayerProxy implements PlayerClient {
 					new BufferedReader(new InputStreamReader(res.getEntity().getContent()));
 			StringBuilder resBuilder = new StringBuilder();
 			String nextLine = reader.readLine();
-			while(!nextLine.isEmpty()) {
+			while(nextLine != null && !nextLine.isEmpty()) {
 				resBuilder.append(nextLine);
+				nextLine = reader.readLine();
 			}
 			return resBuilder.toString();
 		} catch (IllegalStateException e) {

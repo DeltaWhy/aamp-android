@@ -35,7 +35,7 @@ public class ProxyUIBridge extends Thread implements Handler.Callback{
 	@Override
 	public void run() {
 		Looper.prepare();
-		this.mHandler = new Handler(this);
+		this.mHandler = new Handler(Looper.myLooper(), this);
 		Looper.loop(); //blocks forever
 	}
 

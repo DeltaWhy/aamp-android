@@ -22,7 +22,7 @@ public class HTTPService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.player = new Player();
-        player.addProvider(new SdFolderProvider("/aamp-music", true, this));
+        player.addProvider(new SdFolderProvider("/Music", true, this));
         GsonBuilder gb = new GsonBuilder();
         gb.registerTypeAdapter(Song.class, new SongSerializer());
         gb.registerTypeAdapter(Playlist.class, new PlaylistDeserializer(this.player));
