@@ -59,6 +59,7 @@ public class ProxyUIBridge extends Thread implements Handler.Callback{
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
+			break;
 		case ProxyUIBridge.QUERY:
 			Playlist result = player.buildPlaylist((Query) msg.obj);
 			res = Message.obtain();

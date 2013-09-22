@@ -90,7 +90,6 @@ public class SongDisplay extends ListView implements OnScrollListener {
 			if(msg.what == ProxyUIBridge.GET_ALL_SONGS && msg.obj != null
 					&& ((Playlist) msg.obj).size() > 0) {//We got them back yay
 				this.list.append((Playlist)msg.obj); // #WOOT
-				System.out.println("GOT DATA SWEET BABY JESUS");
 				this.notifyDataSetChanged();
 			}else if(msg.what == ProxyUIBridge.GET_ALL_SONGS && retries > 0) {
 	        	Message giveMeData = Message.obtain(bg, ProxyUIBridge.GET_ALL_SONGS);
