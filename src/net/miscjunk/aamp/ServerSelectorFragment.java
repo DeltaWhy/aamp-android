@@ -50,4 +50,12 @@ public class ServerSelectorFragment extends Fragment implements android.widget.C
             ipAddress.setEnabled(checked);
         }
     }
+    
+    public String getHost() {
+        if (localServer.isChecked()) {
+            return "localhost";
+        } else {
+            return ipAddress.getText().toString();
+        }
+    }
 }

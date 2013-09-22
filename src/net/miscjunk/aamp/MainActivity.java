@@ -109,7 +109,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         	AlertDialog dialog = new AlertDialog.Builder(this)
         			.setNeutralButton("OK", new DialogInterface.OnClickListener() {	
 						@Override
-						public void onClick(DialogInterface dialog, int which) {
+						public void onClick(DialogInterface dialog, int which) {        
 							dialog.dismiss();
 						}
 					}).setTitle("No music added yet")
@@ -236,9 +236,14 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
     	    sendBroadcast(new Intent("net.miscjunk.aamp.PlayerService.STOP"));
     	    finish();
     	} else if (item.getItemId() == R.id.changeServer) {
-    	    String host = serverSelectorFragment.ipAddress.getText().toString();
+    	    String host = serverSelectorFragment.getHost();
     	    System.out.println(host);
     	    player.setBaseUri("http://"+host+":13531/");
+    	    serverListener.removeServerListener(this);
+    	    serverListener.stop();
+    	    serverListener = new ServerEventListener(host, 13532);
+    	    serverListener.addServerListener(this);
+    	    serverListener.start();
     	    getFragmentManager().popBackStack();
     	}else if(item.getItemId() == R.id.folders_choose) {
 			AlertDialog chooseFolderDial = new AlertDialog.Builder(this).
