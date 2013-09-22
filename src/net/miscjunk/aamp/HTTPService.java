@@ -11,8 +11,8 @@ import org.eclipse.jetty.server.Server;
 
 
 public class HTTPService extends Service {
-    Player player;
-    Server server;
+    private Player player;
+    private Server server;
     
     @Override
     public IBinder onBind(Intent arg0) {
@@ -22,7 +22,7 @@ public class HTTPService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.player = new Player();
-        player.addProvider(new SdFolderProvider("/aamp-music", true));
+        player.addProvider(new SdFolderProvider("/aamp-music", true, this));
         GsonBuilder gb = new GsonBuilder();
         gb.registerTypeAdapter(Song.class, new SongSerializer());
         gb.registerTypeAdapter(Playlist.class, new PlaylistDeserializer(this.player));

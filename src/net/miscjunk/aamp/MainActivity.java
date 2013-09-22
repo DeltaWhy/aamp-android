@@ -1,7 +1,20 @@
 package net.miscjunk.aamp;
 
+import net.miscjunk.aamp.common.MusicProvider;
+import net.miscjunk.aamp.common.MusicProviderDeserializer;
+import net.miscjunk.aamp.common.PlayerClient;
+import net.miscjunk.aamp.common.Playlist;
+import net.miscjunk.aamp.common.PlaylistDeserializer;
+import net.miscjunk.aamp.common.Song;
+import net.miscjunk.aamp.common.SongSerializer;
+
+import com.google.gson.GsonBuilder;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,11 +22,24 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-public class MainActivity extends Activity {   
-
+public class MainActivity extends Activity implements Callback {   
+	private ProxyUIBridge bridge;
+	private Handler bgHandle;
+	private Handler mHandler;
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler(this);
+        
+        AAMPPlayerProxy player = new AAMPPlayerProxy("localhost", "13531");
+        GsonBuilder gb = new GsonBuilder();
+        gb.registerTypeAdapter(Song.class, new SongSerializer());
+        gb.registerTypeAdapter(Playlist.class, new PlaylistDeserializer(player));
+        gb.registerTypeAdapter(MusicProvider.class, new MusicProviderDeserializer());
+        player.setGson(gb.create());
+        
+        bridge = new ProxyUIBridge(player, mHandler);
+        bridge.start();
         setContentView(R.layout.activity_main);
         getWindowManager().getDefaultDisplay().getSize(Screen.dims);      
         RelativeLayout fragmentLayouts = (RelativeLayout) findViewById(R.id.fragments_view);
@@ -100,11 +126,16 @@ public class MainActivity extends Activity {
     
     private  boolean paused = true;
     public void togglePlayPause(View v) {
+		Message msg = Message.obtain(bgHandle);
     	if(paused) {
     		v.setBackgroundResource(android.R.drawable.ic_media_play);
+    		msg.what = ProxyUIBridge.PAUSE;
     	}else {
     		v.setBackgroundResource(android.R.drawable.ic_media_pause);
+    		msg.what = ProxyUIBridge.PLAY;
     	}
+    	
+		msg.sendToTarget();
     	paused = !paused;
     }
     
@@ -119,7 +150,6 @@ public class MainActivity extends Activity {
     public void volumeBar(View v) {
     	SeekBar bar = (SeekBar) v;
     	Log.e("Volume", "Clicked " + bar.getProgress());
-
     }
     
     public void seekBar(View v) {
@@ -132,4 +162,9 @@ public class MainActivity extends Activity {
     	}
     	return false;
     }
+
+	@Override
+	public boolean handleMessage(Message msg) {
+		return false;
+	}
 }
