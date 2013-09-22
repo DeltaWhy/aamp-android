@@ -80,7 +80,9 @@ public class ServerEventListener {
                     }
                 });
                 
+                System.out.println("ServerEventListener connecting...");
                 ChannelFuture f = b.connect(host, port).sync();
+                System.out.println("ServerEventListener connected.");
 
                 f.channel().closeFuture().sync();
             } catch (InterruptedException e) {

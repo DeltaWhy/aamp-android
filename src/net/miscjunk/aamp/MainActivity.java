@@ -13,12 +13,15 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Handler.Callback;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
@@ -32,7 +35,7 @@ import android.widget.Toast;
 
 import com.google.gson.GsonBuilder;
 
-public class MainActivity extends Activity implements Callback, OnClickListener, ServerListener {   
+public class MainActivity extends Activity implements Callback, OnClickListener, ServerListener, ServiceConnection {   
         private AAMPPlayerProxy player;
 	private ProxyUIBridge bridge;
 	private Handler bgHandle;
@@ -62,6 +65,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         //Set up threading stuff
         mHandler = new Handler(this);
         startService(new Intent(this, PlayerService.class));
+        bindService(new Intent(this, PlayerService.class), this, BIND_AUTO_CREATE);
         player = new AAMPPlayerProxy("localhost", "13531");
         GsonBuilder gb = new GsonBuilder();
         gb.registerTypeAdapter(Song.class, new SongAdapter());
@@ -94,7 +98,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         folderSelected = new EditText(this);
         serverListener = new ServerEventListener("localhost",13532);
         serverListener.addServerListener(this);
-        serverListener.start();
         
         FragmentManager fm = getFragmentManager();
         nowPlayingFragment = new NowPlayingFragment();
@@ -283,6 +286,24 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
 	}
     @Override
     public void onServerEvent(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        if (message.equals("play")) {
+            play_button.setVisibility(View.GONE);
+            pause_button.setVisibility(View.VISIBLE);
+        } else if (message.equals("pause")) {
+            play_button.setVisibility(View.VISIBLE);
+            pause_button.setVisibility(View.GONE);
+        } else {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        serverListener.start();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        
     }
 }

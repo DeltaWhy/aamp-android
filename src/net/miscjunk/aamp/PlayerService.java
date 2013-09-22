@@ -14,7 +14,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 
 import org.eclipse.jetty.server.Server;
@@ -35,9 +39,12 @@ public class PlayerService extends Service {
         }
     };
     
+    final Handler mHandler = new Handler();
+    final Messenger mMessenger = new Messenger(mHandler);
+    
     @Override
     public IBinder onBind(Intent arg0) {
-        return null;
+        return mMessenger.getBinder();
     }
     
     public void stopServer() {
@@ -83,6 +90,7 @@ public class PlayerService extends Service {
         
         eventServer = new EventServer(13532);
         eventServer.start();
+        player.setEventServer(eventServer);
         
         Notification n = new NotificationCompat.Builder(this)
             .setContentTitle("AAMP Server")
@@ -94,6 +102,11 @@ public class PlayerService extends Service {
         
         startForeground(13531, n);
         super.onCreate();
+        try {
+            mMessenger.send(Message.obtain(mHandler, 0, 0, 0));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
     
     @Override
