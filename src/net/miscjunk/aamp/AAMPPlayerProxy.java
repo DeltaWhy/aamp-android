@@ -268,4 +268,7 @@ public class AAMPPlayerProxy implements PlayerClient {
 		this.gs = gson;
 	}
 
+	public void setBaseUri(String baseUri) {
+	    this.baseUri = baseUri;
+	}
 }
