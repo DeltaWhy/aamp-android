@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.os.Environment;
 import net.miscjunk.aamp.common.*;
 
@@ -13,8 +14,10 @@ public class SdFolderProvider implements MusicProvider {
     String rootDir;
     private Playlist playlist;
     private Map<String, String> names;
+    Context ctx;
 
-    public SdFolderProvider(String path, boolean create) {
+    public SdFolderProvider(Context ctx, String path, boolean create) {
+        this.ctx = ctx;
         this.rootDir = "/sdcard"+path;
         System.out.println("Root dir: "+rootDir);
         playlist = new Playlist();
@@ -61,6 +64,6 @@ public class SdFolderProvider implements MusicProvider {
 
     @Override
     public PlayableSong inflate(Song song) {
-        return null;
+        return new LocalSDCardSong(rootDir, names.get(song.getId()), ctx);
     }
 }

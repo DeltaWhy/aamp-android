@@ -32,10 +32,10 @@ public class ServiceTestActivity extends Activity implements OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == startButton) {
-            startService(new Intent(this, HTTPService.class));
+            startService(new Intent(this, PlayerService.class));
         } else if (v == stopButton) {
-            sendBroadcast(new Intent("net.miscjunk.aamp.HTTPService.STOP"));
-            stopService(new Intent(this, HTTPService.class));
+            sendBroadcast(new Intent("net.miscjunk.aamp.PlayerService.STOP"));
+            stopService(new Intent(this, PlayerService.class));
         }
     }
 }
