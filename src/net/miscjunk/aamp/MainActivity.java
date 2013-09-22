@@ -102,7 +102,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         FragmentManager fm = getFragmentManager();
         nowPlayingFragment = new NowPlayingFragment();
         fm.beginTransaction().add(R.id.fragments_view, nowPlayingFragment).commit();
-        checkSeekBars();
         
         settings = new SettingsLoader(this.getApplicationContext()).load();
         if(settings.getMusicDirectories().isEmpty()) {
@@ -117,51 +116,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         	dialog.show();
         }
     }
-
-    private void checkSeekBars() {
-	    SeekBar vol = (SeekBar) findViewById(R.id.volume_bar);
-	    if(vol != null) {
-		    vol.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-				
-				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					Log.e("got volume bar", "" + seekBar.getProgress());
-				}
-				
-				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					
-				}
-				
-				@Override
-				public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-					
-				}
-			});
-	    }
-	    SeekBar progress = (SeekBar) findViewById(R.id.seekBar);
-	    if(progress != null) {
-		    progress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-				
-				@Override
-				public void onStopTrackingTouch(SeekBar seekBar) {
-					Log.e("got seek bar", "" + seekBar.getProgress());
-				}
-				
-				@Override
-				public void onStartTrackingTouch(SeekBar seekBar) {
-					
-				}
-				
-				@Override
-				public void onProgressChanged(SeekBar seekBar, int progress,
-						boolean fromUser) {
-					seekBar.showContextMenu();
-					
-				}
-			});		
-	    }
-	}
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {

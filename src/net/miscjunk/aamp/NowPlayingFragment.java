@@ -23,11 +23,8 @@ public class NowPlayingFragment extends Fragment{
 		disp = new SongDisplay(getActivity(), act.getBackgroundHandler());
 	    inflated = (RelativeLayout) inflater.inflate(R.layout.now_playing,
 	            container, false);
-	    RelativeLayout controlsLayout = (RelativeLayout)inflated.findViewById(R.id.control_items);
 	    RelativeLayout.LayoutParams dispParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 	    inflated.addView(disp, dispParams);
-	    controlsLayout.setGravity(Gravity.TOP);
-	    dispParams.topMargin = 120;
 	    return inflated;
 	  }	  
 }

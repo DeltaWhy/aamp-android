@@ -3,30 +3,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    
-    <RelativeLayout android:id="@+id/control_items"
-        android:layout_width="match_parent"
-        android:layout_height="1000dp">
-        <TextView 
-            	  android:id="@+id/volume_label"
-            	  android:text="Volume: "
-            	  android:layout_width="wrap_content" 
-            	  android:layout_height="40dp"/>
-        <SeekBar android:id="@+id/volume_bar" 
-         		android:layout_width="match_parent"
-        		android:layout_height="40dp"
-        		android:onClick="volumeBar"/>
-        <TextView 
-            android:id="@+id/seek_label"
-            android:text="Progress "             	  
-            android:layout_width="wrap_content"
-			android:layout_height="40dp"
-			android:layout_below="@+id/volume_label"/>
-
-        <SeekBar android:id="@+id/seekBar" 
-         		android:layout_width="match_parent"
-        		android:layout_height="40dp"
-        		android:layout_below="@+id/volume_bar"
-        		android:onClick="seekBar"/>
-    </RelativeLayout>
 </RelativeLayout>
