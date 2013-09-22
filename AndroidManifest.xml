@@ -26,22 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="net.miscjunk.aamp.ServiceTestActivity"
-            android:label="@string/title_activity_service_test" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <service android:name="net.miscjunk.aamp.PlayerService" >
         </service>
-
-        <activity
-            android:name="net.miscjunk.aamp.SoundtestActivity"
-            android:label="@string/title_activity_soundtest" >
-        </activity>
     </application>
 
 </manifest>
