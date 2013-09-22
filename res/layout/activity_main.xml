@@ -44,12 +44,16 @@
         android:contentDescription="Play"
         android:src="@android:drawable/ic_media_play"
         style="?android:attr/buttonBarButtonStyle" />
-    <ImageButton android:id="@+id/pause_button"
+
+    <ImageButton
+        android:id="@+id/pause_button"
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="Pause"
         android:src="@android:drawable/ic_media_pause"
-        style="?android:attr/buttonBarButtonStyle" />
+        android:visibility="gone" />
+
     <ImageButton android:id="@+id/next_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

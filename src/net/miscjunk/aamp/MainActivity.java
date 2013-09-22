@@ -19,13 +19,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-public class MainActivity extends Activity implements Callback {   
+public class MainActivity extends Activity implements Callback, OnClickListener {   
 	private ProxyUIBridge bridge;
 	private Handler bgHandle;
 	private Handler mHandler;
+	private ImageButton prev_button;
+	private ImageButton play_button;
+	private ImageButton pause_button;
+	private ImageButton next_button;
 	private Runnable tellMeGodHesNotNull = new Runnable() {
 		@Override
 		public void run() {
@@ -58,6 +65,14 @@ public class MainActivity extends Activity implements Callback {
         //Set up UI stuff
         setContentView(R.layout.activity_main);
         getWindowManager().getDefaultDisplay().getSize(Screen.dims);      
+        prev_button = (ImageButton)findViewById(R.id.prev_button);
+        play_button = (ImageButton)findViewById(R.id.play_button);
+        pause_button = (ImageButton)findViewById(R.id.pause_button);
+        next_button = (ImageButton)findViewById(R.id.next_button);
+        prev_button.setOnClickListener(this);
+        play_button.setOnClickListener(this);
+        pause_button.setOnClickListener(this);
+        next_button.setOnClickListener(this);
         checkSeekBars();
         startService(new Intent(this, PlayerService.class));
     }
@@ -126,19 +141,20 @@ public class MainActivity extends Activity implements Callback {
     }
     
     
-    private  boolean paused = true;
-    public void togglePlayPause(View v) {
-		Message msg = Message.obtain(bgHandle);
-    	if(paused) {
-    		v.setBackgroundResource(android.R.drawable.ic_media_play);
-    		msg.what = ProxyUIBridge.PAUSE;
-    	}else {
-    		v.setBackgroundResource(android.R.drawable.ic_media_pause);
-    		msg.what = ProxyUIBridge.PLAY;
-    	}
-    	
-		msg.sendToTarget();
-    	paused = !paused;
+    public void play(View v) {
+        Message msg = Message.obtain(bgHandle);
+        v.setVisibility(View.GONE);
+        pause_button.setVisibility(View.VISIBLE);
+        msg.what = ProxyUIBridge.PLAY;
+        msg.sendToTarget();
+    }
+    
+    public void pause(View v) {
+        Message msg = Message.obtain(bgHandle);
+        v.setVisibility(View.GONE);
+        play_button.setVisibility(View.VISIBLE);
+        msg.what = ProxyUIBridge.PAUSE;
+        msg.sendToTarget();
     }
     
     public void next(View v) {
@@ -172,4 +188,17 @@ public class MainActivity extends Activity implements Callback {
 	public boolean handleMessage(Message msg) {
 		return false;
 	}
+
+    @Override
+    public void onClick(View v) {
+        if (v == prev_button) {
+            prev(v);
+        } else if (v == play_button) {
+            play(v);
+        } else if (v == pause_button) {
+            pause(v);
+        } else if (v == next_button) {
+            next(v);
+        }
+    }
 }

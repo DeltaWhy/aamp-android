@@ -28,33 +28,5 @@
         		android:layout_height="40dp"
         		android:layout_below="@+id/volume_bar"
         		android:onClick="seekBar"/>
-        <RelativeLayout android:id="@+id/buttons"
-                    	android:gravity="center"
-            			android:layout_height="30dp"
-            			android:layout_width="match_parent"
-            			android:layout_below="@+id/seekBar"
-            			
-            			>
-        <Button android:id="@+id/play_pause_but" 
-         		android:layout_width="50dp"
-        		android:layout_height="55dp"
-        		android:onClick="togglePlayPause" 
-  				android:layout_toRightOf="@+id/prev_but"
-  				android:background="@android:drawable/ic_media_play"
-/>
-        <Button android:id="@+id/next_but" 
-         		android:layout_width="50dp"
-        		android:layout_height="55dp"
-        		android:layout_toRightOf="@+id/play_pause_but"
-        		android:onClick="next"
-        		android:background="@android:drawable/ic_media_next"
- />
-        <Button android:id="@+id/prev_but" 
-         		android:layout_width="50dp"
-        		android:layout_height="55dp"
-        		android:onClick="prev" 
-        		android:background="@android:drawable/ic_media_previous"
-        		/>
-        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>
