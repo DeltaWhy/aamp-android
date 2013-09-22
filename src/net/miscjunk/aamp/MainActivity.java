@@ -1,5 +1,6 @@
 package net.miscjunk.aamp;
 
+import net.miscjunk.aamp.SongDisplay.OnSongClicked;
 import net.miscjunk.aamp.common.MusicProvider;
 import net.miscjunk.aamp.common.MusicProviderDeserializer;
 import net.miscjunk.aamp.common.Playlist;
@@ -22,7 +23,9 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-public class MainActivity extends Activity implements Callback {   
+public class MainActivity extends Activity implements Callback, OnSongClicked {   
+	public static final int HERE_IS_YOUR_DATA = 1;
+	
 	private ProxyUIBridge bridge;
 	private Handler bgHandle;
 	private Handler mHandler;
@@ -32,6 +35,7 @@ public class MainActivity extends Activity implements Callback {
 			if(bridge.mHandler == null) { mHandler.postDelayed(this, 200); Log.e("He's null", "jim"); }
 			else {
 				bgHandle = bridge.mHandler;
+				bgHandle.obtainMessage(ProxyUIBridge.INIT_UI_WITH_THE_DATA);
 				Log.e("Free at last", "Free at last");
 			}
 		}
@@ -141,6 +145,8 @@ public class MainActivity extends Activity implements Callback {
     
     
     private  boolean paused = true;
+
+	private Playlist currentPlaylist;
     public void togglePlayPause(View v) {
 		Message msg = Message.obtain(bgHandle);
     	if(paused) {
@@ -149,18 +155,19 @@ public class MainActivity extends Activity implements Callback {
     	}else {
     		v.setBackgroundResource(android.R.drawable.ic_media_pause);
     		msg.what = ProxyUIBridge.PLAY;
-    	}
-    	
+    	}    	
 		msg.sendToTarget();
     	paused = !paused;
     }
     
     public void next(View v) {
     	Log.e("Next", "Clicked");
+    	Message.obtain(bgHandle, ProxyUIBridge.NEXT).sendToTarget();
     }
     
     public void prev(View v) {
     	Log.e("Prev", "Clicked");
+    	Message.obtain(bgHandle, ProxyUIBridge.PREV).sendToTarget();
     }
     
     public void volumeBar(View v) {
@@ -181,6 +188,22 @@ public class MainActivity extends Activity implements Callback {
 
 	@Override
 	public boolean handleMessage(Message msg) {
+		switch (msg.what) {
+		case HERE_IS_YOUR_DATA:
+			this.currentPlaylist = (Playlist) msg.obj;
+			break;
+		default:
+			break;
+		}
 		return false;
+	}
+
+	public Playlist getCurrentQueue() {
+		return currentPlaylist;
+	}
+
+	@Override
+	public void onSongClick(String id) {
+		bgHandle.obtainMessage(ProxyUIBridge.SKIP_TO, id);
 	}
 }

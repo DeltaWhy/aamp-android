@@ -1,5 +1,6 @@
 package net.miscjunk.aamp;
 
+import net.miscjunk.aamp.common.Playlist;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -16,7 +17,11 @@ public class NowPlayingFragment extends Fragment{
 	  @Override
 	  public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	      Bundle savedInstanceState) {
-		disp = new SongDisplay(getActivity());
+		  MainActivity act = (MainActivity) getActivity();
+		  if(act.getCurrentQueue() == null) {//rerun in 500 ms
+			  
+		  }
+		disp = new SongDisplay(getActivity(), act.getCurrentQueue(), act);
 	    inflated = (RelativeLayout) inflater.inflate(R.layout.now_playing,
 	            container, false);
 	    RelativeLayout controlsLayout = (RelativeLayout)inflated.findViewById(R.id.control_items);
