@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name="net.miscjunk.aamp.HTTPService" >
+        <service android:name="net.miscjunk.aamp.PlayerService" >
         </service>
 
         <activity

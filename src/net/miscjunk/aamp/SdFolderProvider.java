@@ -14,9 +14,10 @@ public class SdFolderProvider implements MusicProvider {
     String rootDir;
     private Playlist playlist;
     private Map<String, String> names;
-    private Context context;
+    private Context ctx;
 
-    public SdFolderProvider(String path, boolean create, Context context) {
+    public SdFolderProvider(Context context, String path, boolean create) {
+        this.ctx = context;
         this.rootDir = "/sdcard"+path;
         System.out.println("Root dir: "+rootDir);
         playlist = new Playlist();
@@ -35,7 +36,6 @@ public class SdFolderProvider implements MusicProvider {
                 i++;
             }
         }
-        this.context = context;
     }
 
     @Override
@@ -64,6 +64,6 @@ public class SdFolderProvider implements MusicProvider {
 
     @Override
     public PlayableSong inflate(Song song) {
-        return new LocalSDCardSong(rootDir, song.getTitle(), context);
+        return new LocalSDCardSong(rootDir, names.get(song.getId()), ctx);
     }
 }
