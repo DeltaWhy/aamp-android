@@ -73,7 +73,7 @@ public class PlayerService extends Service {
         Notification n = new NotificationCompat.Builder(this)
             .setContentTitle("AAMP Server")
             .setContentText("AAMP is running in the background.")
-            .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, ServiceTestActivity.class), 0))
+            .setContentIntent(PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0))
             .setOngoing(true)
             .setSmallIcon(R.drawable.ic_launcher)
             .build();

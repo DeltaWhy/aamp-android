@@ -1,6 +1,7 @@
 package net.miscjunk.aamp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,22 +17,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindowManager().getDefaultDisplay().getSize(Screen.dims);      
-        RelativeLayout fragmentLayouts = (RelativeLayout) findViewById(R.id.fragments_view);
-        fragmentLayouts.getLayoutParams().height = 8 * Screen.dims.y / 10;
-        RelativeLayout buttonsLayout = (RelativeLayout) findViewById(R.id.bottom_menu);
-        buttonsLayout.getLayoutParams().height = Screen.dims.y - fragmentLayouts.getLayoutParams().height;
-        ((RelativeLayout.LayoutParams) buttonsLayout.getLayoutParams()).topMargin = fragmentLayouts.getLayoutParams().height;
-        
-        View npBut = buttonsLayout.findViewById(R.id.now_playing_but);
-		RelativeLayout.LayoutParams npButParams = (RelativeLayout.LayoutParams) npBut.getLayoutParams();
-        npButParams.width = Screen.dims.x / 2;
-        npButParams.setMargins(Screen.dims.x / 2, 0, 0, 0);
-        npBut.invalidate();
-        
-        RelativeLayout.LayoutParams playlistParams = (RelativeLayout.LayoutParams) buttonsLayout.findViewById(R.id.playlists_but).getLayoutParams();
-        playlistParams.width = Screen.dims.x / 2;
-        playlistParams.leftMargin = 0;
         checkSeekBars();
+        startService(new Intent(this, PlayerService.class));
     }
 
     private void checkSeekBars() {
@@ -129,6 +116,9 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	if(item.getItemId() == R.id.servers_choose)  {
         	Log.e("CLick", "choose servers");
+    	} else if (item.getItemId() == R.id.exit){
+    	    sendBroadcast(new Intent("net.miscjunk.aamp.PlayerService.STOP"));
+    	    finish();
     	}
     	return false;
     }
