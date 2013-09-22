@@ -23,6 +23,7 @@ import org.eclipse.jetty.server.Server;
 public class PlayerService extends Service {
     Player player;
     Server server;
+    EventServer eventServer;
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -50,6 +51,10 @@ public class PlayerService extends Service {
                 System.out.println("Couldn't clean up server.");
             }
         }
+        if (eventServer != null) {
+            eventServer.sendMessage("Shutting down");
+            eventServer.stop();
+        }
     }
 
     @Override
@@ -75,6 +80,9 @@ public class PlayerService extends Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        eventServer = new EventServer(13532);
+        eventServer.start();
         
         Notification n = new NotificationCompat.Builder(this)
             .setContentTitle("AAMP Server")
