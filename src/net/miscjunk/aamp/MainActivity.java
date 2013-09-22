@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 		}
 	};
 	private Fragment nowPlayingFragment;
+	private Fragment serverSelectorFragment;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,12 +188,17 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     	    FragmentManager fm = getFragmentManager();
     	    FragmentTransaction trans = fm.beginTransaction();
     	    trans.remove(nowPlayingFragment);
-    	    trans.add(R.id.fragments_view, new ServerSelectorFragment());
+    	    if (serverSelectorFragment == null) {
+    	        serverSelectorFragment = new ServerSelectorFragment();
+    	    }
+    	    trans.add(R.id.fragments_view, serverSelectorFragment);
     	    trans.addToBackStack(null);
     	    trans.commit();
     	} else if (item.getItemId() == R.id.exit){
     	    sendBroadcast(new Intent("net.miscjunk.aamp.PlayerService.STOP"));
     	    finish();
+    	} else if (item.getItemId() == R.id.changeServer) {
+    	    System.out.println("change server");
     	}
     	return false;
     }
