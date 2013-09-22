@@ -130,15 +130,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
         super.onDestroy();
     }
     
-    public void playlistsClicked(View v) {
-    	
-    }
-    
-    public void nowPlayingClicked(View v) {
-    	Log.e("Play", "Clicked");
-    }
-    
-    
     public void play(View v) {
         Message msg = Message.obtain(bgHandle);
         v.setVisibility(View.GONE);
@@ -165,14 +156,6 @@ public class MainActivity extends Activity implements Callback, OnClickListener,
     	Message.obtain(bgHandle, ProxyUIBridge.PREV).sendToTarget();
     }
     
-    public void volumeBar(View v) {
-    	SeekBar bar = (SeekBar) v;
-    	Log.e("Volume", "Clicked " + bar.getProgress());
-    }
-    
-    public void seekBar(View v) {
-    	Log.e("Seek", "Clicked");
-    }
 	EditText folderSelected;
 
     public boolean onOptionsItemSelected(MenuItem item) {

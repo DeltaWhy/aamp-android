@@ -14,6 +14,7 @@ public class ProxyUIBridge extends Thread implements Handler.Callback{
 	public static final int SKIP_TO = 4;
 	public static final int INIT_UI_WITH_THE_DATA = 5;
 	public static final int GET_ALL_SONGS = 6;
+	public static final int GET_QUEUE = 7;
 	
 	public Handler mHandler;
 	private AAMPPlayerProxy player;
@@ -50,6 +51,16 @@ public class ProxyUIBridge extends Thread implements Handler.Callback{
 			res.what = GET_ALL_SONGS;
 			try {
 				msg.replyTo.send(res);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			break;
+		case ProxyUIBridge.GET_QUEUE:
+			Message res2 = Message.obtain();
+			res2.obj = player.getQueue();
+			res2.what = GET_QUEUE;
+			try {
+				msg.replyTo.send(res2);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
