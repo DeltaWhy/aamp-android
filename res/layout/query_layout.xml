@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:labelFor="@+id/includes"
+        android:text="includes" />
+
+    <EditText
+        android:id="@+id/includes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:ems="10"
+        android:hint="artist:pink floyd album:escape" />
+
+    <requestFocus />
+
+    <Button
+        android:id="@+id/run_query_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mix these up!" />
+
+    <TextView
+        android:id="@+id/query_preview"
+        android:layout_width="246dp"
+        android:layout_height="0dp"
+        android:layout_margin="30dp"
+        android:layout_weight="0.01" />
+
+</LinearLayout>

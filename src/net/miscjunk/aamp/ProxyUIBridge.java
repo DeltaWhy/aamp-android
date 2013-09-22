@@ -1,6 +1,7 @@
 package net.miscjunk.aamp;
 
 import net.miscjunk.aamp.common.Playlist;
+import net.miscjunk.aamp.common.Query;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -14,6 +15,8 @@ public class ProxyUIBridge extends Thread implements Handler.Callback{
 	public static final int SKIP_TO = 4;
 	public static final int INIT_UI_WITH_THE_DATA = 5;
 	public static final int GET_ALL_SONGS = 6;
+	public static final int QUERY = 7;
+	public static final int USE_PLAYLIST = 8;
 	
 	public Handler mHandler;
 	private AAMPPlayerProxy player;
@@ -48,6 +51,16 @@ public class ProxyUIBridge extends Thread implements Handler.Callback{
 			Message res = Message.obtain();
 			res.obj = songs;
 			res.what = GET_ALL_SONGS;
+			try {
+				msg.replyTo.send(res);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		case ProxyUIBridge.QUERY:
+			Playlist result = player.buildPlaylist((Query) msg.obj);
+			res = Message.obtain();
+			res.what = ProxyUIBridge.USE_PLAYLIST;
+			res.obj = msg.replyTo;
 			try {
 				msg.replyTo.send(res);
 			} catch (RemoteException e) {

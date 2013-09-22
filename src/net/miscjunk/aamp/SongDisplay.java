@@ -98,7 +98,10 @@ public class SongDisplay extends ListView implements OnScrollListener {
 	        	bg.sendMessageDelayed(giveMeData, 500);
 	        	retries--;
 				System.out.println("Try again more times : " + retries);
-
+			}else if(msg.what == ProxyUIBridge.USE_PLAYLIST) {
+				this.count = 40;
+				this.list = (Playlist) msg.obj;
+				this.notifyDataSetChanged();
 			}
 			return false;
 		}
