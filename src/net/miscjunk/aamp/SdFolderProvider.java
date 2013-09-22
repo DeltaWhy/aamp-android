@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
+import android.media.MediaMetadataRetriever;
 import android.os.Environment;
 import net.miscjunk.aamp.common.*;
 
@@ -30,7 +31,20 @@ public class SdFolderProvider implements MusicProvider {
             for(File songFile : thisDir.listFiles(filter)) {
                 System.out.println("Detected song: " + songFile.getName());
                 Song added = new Song(songFile.getName() + i + this.getId(), this);
-                added.setTitle(songFile.getName()); //TODO - read ID3 tags
+                MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+                mmr.setDataSource(songFile.getAbsolutePath());
+                added.setTitle(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE));
+                if (added.getTitle() == null || added.getTitle().equals("")) {
+                    added.setTitle(songFile.getName());
+                }
+                added.setArtist(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
+                added.setAlbum(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
+                String track = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER);
+                if (track != null && !track.equals("")) {
+                    try{
+                        added.setTrack(Integer.parseInt(track));
+                    } catch (NumberFormatException e) {}
+                }
                 playlist.addSong(added);
                 names.put(added.getId(), songFile.getName());
                 i++;
