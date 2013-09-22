@@ -1,11 +1,6 @@
 package net.miscjunk.aamp;
 
-import net.miscjunk.aamp.common.MusicProvider;
-import net.miscjunk.aamp.common.MusicProviderDeserializer;
-import net.miscjunk.aamp.common.Playlist;
-import net.miscjunk.aamp.common.PlaylistDeserializer;
-import net.miscjunk.aamp.common.Song;
-import net.miscjunk.aamp.common.SongSerializer;
+import net.miscjunk.aamp.common.*;
 
 import com.google.gson.GsonBuilder;
 
@@ -27,8 +22,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
-public class MainActivity extends Activity implements Callback, OnClickListener {   
+public class MainActivity extends Activity implements Callback, OnClickListener, ServerListener {   
         private AAMPPlayerProxy player;
 	private ProxyUIBridge bridge;
 	private Handler bgHandle;
@@ -47,6 +43,7 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
 			}
 		}
 	};
+	private ServerEventListener serverListener;
 	private Fragment nowPlayingFragment;
 	private ServerSelectorFragment serverSelectorFragment;
 	
@@ -79,6 +76,10 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         play_button.setOnClickListener(this);
         pause_button.setOnClickListener(this);
         next_button.setOnClickListener(this);
+        
+        serverListener = new ServerEventListener("localhost",13532);
+        serverListener.addServerListener(this);
+        serverListener.start();
         
         FragmentManager fm = getFragmentManager();
         nowPlayingFragment = new NowPlayingFragment();
@@ -139,6 +140,9 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
     }
     @Override
     protected void onDestroy() {
+        if (serverListener != null) {
+            serverListener.stop();
+        }
         super.onDestroy();
     }
     
@@ -223,5 +227,10 @@ public class MainActivity extends Activity implements Callback, OnClickListener 
         } else if (v == next_button) {
             next(v);
         }
+    }
+
+    @Override
+    public void onServerEvent(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }
